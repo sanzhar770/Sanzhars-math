@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Tutor: Quadratic Equations</title>
+<style>
+:root{--bg:#eef0fb;--card:#fff;--text:#1b1f33;--muted:#626a85;--line:#e1e4f2;--p:#5b4df0;--p2:#8a5cf6;--ok:#12803c;--bad:#c62828;--soft:#f4f5ff;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#10121c;--card:#1a1d2e;--text:#eceefb;--muted:#9aa2c0;--line:#2b3049;--p:#8b80ff;--p2:#b18cff;--ok:#4ade80;--bad:#f87171;--soft:#222640}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:22px 16px 56px}
+.wrap{max-width:640px;margin:0 auto}
+h1{margin:0;font-size:1.35rem}header p{margin:4px 0 0;opacity:.9;font-size:.9rem}
+main{max-width:640px;margin:-40px auto 0;padding:0 14px 28px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card);padding:6px;border-radius:16px;box-shadow:0 6px 20px rgba(40,30,120,.15)}
+.seg button{border:0;background:transparent;color:var(--muted);padding:10px 4px;border-radius:12px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;min-height:52px;line-height:1.25}
+.seg button b{display:block;font-size:.95rem}
+.seg button.on{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--p);background:var(--soft);padding:3px 9px;border-radius:99px}
+.eq{font-size:1.5rem;font-weight:700;text-align:center;margin:12px 0 6px;font-family:Georgia,"Times New Roman",serif}
+.problem{margin:10px 0 0}
+.badge{display:flex;gap:8px;align-items:flex-start;background:var(--soft);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:.88rem;color:var(--muted)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{flex:1 1 140px;min-height:46px;border-radius:12px;border:1.5px solid var(--p);background:transparent;color:var(--p);font:inherit;font-weight:600;cursor:pointer}
+.btn.fill{background:var(--p);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+.msg{display:flex;gap:10px;margin-top:10px;animation:in .3s ease}
+.av{flex:none;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--p2));display:grid;place-items:center;color:#fff;font-size:.9rem}
+.bub{background:var(--soft);border-radius:4px 14px 14px 14px;padding:9px 12px;font-size:.95rem;flex:1}
+.bub small{display:block;color:var(--p);font-weight:700;margin-bottom:2px}
+.dots span{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.ans{display:flex;gap:8px;margin-top:10px}
+.ans input{flex:1;min-width:0;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+.ans .btn{flex:0 0 auto;padding:0 18px}
+.fb{margin-top:8px;font-weight:600;font-size:.92rem;min-height:1.4em}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.sol ol{padding-left:20px;margin:8px 0}.sol li{margin:6px 0}
+.final{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft);font-weight:700}
+.skel{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--soft),var(--line),var(--soft));background-size:200% 100%;animation:sh 1.1s infinite;margin:10px 0}
+@keyframes sh{to{background-position:-200% 0}}
+.hidden{display:none}
+.prog{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:12px}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--p),var(--p2));transition:width .4s}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🧮 AI Tutor: Quadratic Equations</h1><p>Three difficulty levels, hints and instant feedback</p></div></header>
+<main>
+<div class="seg" id="seg"></div>
+<section class="card" id="pcard"></section>
+<section class="card">
+  <span class="tag">AI hints</span>
+  <div class="prog"><i id="prog"></i></div>
+  <div id="chat"></div>
+  <div class="btns"><button class="btn fill" id="hintBtn">💡 Give me a hint</button><button class="btn" id="solBtn">📖 Solution</button></div>
+</section>
+<section class="card">
+  <span class="tag">Check yourself</span>
+  <div class="ans"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><button class="btn fill" id="chk">Check</button></div>
+  <div class="fb" id="fb"></div>
+</section>
+<section class="card sol hidden" id="solCard"></section>
+</main>
+<script>
+/* ===== Simulated AI responses (same shape an LLM would return via API) ===== */
+const AI = {
+1:{level:1,name:"Foundation",
+ problem:"Solve the equation step by step. The numbers are deliberately simple: the roots are small integers.",
+ eq:"x² − 5x + 6 = 0",hint:"Factoring (Vieta's theorem)",
+ answer:{label:"Enter the two roots separated by a space, e.g. 1 4",roots:[2,3]},
+ hints:["This is a quadratic equation x² + bx + c = 0 with b = −5 and c = 6. The coefficient of x² is 1, so we can use Vieta's theorem.","By Vieta: x₁ + x₂ = 5 and x₁ · x₂ = 6. Find two numbers whose sum is 5 and whose product is 6.","Try factor pairs of 6: 1·6 (sum 7), 2·3 (sum 5). The pair 2 and 3 works!","Check: 2² − 5·2 + 6 = 4 − 10 + 6 = 0 ✓ and 3² − 5·3 + 6 = 9 − 15 + 6 = 0 ✓."],
+ solution:["Identify the coefficients: a = 1, b = −5, c = 6.","By Vieta's theorem: x₁ + x₂ = −b/a = 5, x₁·x₂ = c/a = 6.","Pick the numbers 2 and 3: 2 + 3 = 5, 2 · 3 = 6.","Substitute them into the equation and confirm both sides equal 0."],
+ final:"Answer: x = 2 and x = 3"},
+2:{level:2,name:"Standard",
+ problem:"Solve the quadratic equation using the discriminant. The roots may not be integers.",
+ eq:"2x² − 7x + 3 = 0",hint:"Discriminant formula",
+ answer:{label:"Enter the roots separated by a space (fractions like 1/2 are fine)",roots:[0.5,3]},
+ hints:["Identify the coefficients a, b, c and compute the discriminant D = b² − 4ac.","Here a = 2, b = −7, c = 3, so D = 49 − 24. Compute it and decide how many roots the equation has.","If D > 0, the roots are x = (−b ± √D) / (2a). Substitute the values."],
+ solution:["Coefficients: a = 2, b = −7, c = 3.","D = b² − 4ac = (−7)² − 4·2·3 = 49 − 24 = 25. Since D > 0 there are two distinct roots; √D = 5.","x₁ = (7 − 5) / 4 = 1/2 = 0.5.","x₂ = (7 + 5) / 4 = 12/4 = 3.","Vieta check: x₁ + x₂ = 3.5 = 7/2 ✓, x₁·x₂ = 1.5 = 3/2 ✓."],
+ final:"Answer: x = 0.5 and x = 3"},
+3:{level:3,name:"Advanced",
+ problem:"A farmer fences a rectangular plot with 36 m of fence. The plot's area must be exactly 80 m². Find the side lengths. (Bonus to think about: for which side length would the area be maximal?)",
+ eq:"S = x · (18 − x) = 80",hint:"Modeling + quadratic equation",
+ answer:{label:"Enter the two side lengths separated by a space (in meters)",roots:[8,10]},
+ hints:["Perimeter P = 2(x + y) = 36, so x + y = 18. Express the other side through the first: y = 18 − x.","Area S = x · y = x(18 − x). Set it equal to 80 and rewrite in standard form ax² + bx + c = 0.","You get x² − 18x + 80 = 0. Solve it with the discriminant and match the roots to the side lengths.","Think: the two roots are not two different solutions, but the two sides of the same rectangle."],
+ solution:["From the perimeter: 2(x + y) = 36 ⇒ y = 18 − x.","Area condition: x(18 − x) = 80 ⇒ 18x − x² = 80 ⇒ x² − 18x + 80 = 0.","D = 18² − 4·80 = 324 − 320 = 4, √D = 2.","x₁ = (18 − 2)/2 = 8, x₂ = (18 + 2)/2 = 10. Then y = 18 − x gives 10 and 8: it is the same 8 × 10 rectangle.","Bonus: S(x) = −x² + 18x is a downward parabola with vertex at x = 9, S = 81 m² (a 9 × 9 square). Since 80 < 81, a solution exists."],
+ final:"Answer: the sides are 8 m and 10 m (maximum area 81 m² at side 9 m)"}
+};
+/* Simulated network request to the AI */
+const askAI=(level,delay=900)=>new Promise(r=>setTimeout(()=>r(AI[level]),delay));
+
+const $=id=>document.getElementById(id);
+let cur=1,data=null,shown=0,token=0;
+const labels={1:"Foundation",2:"Standard",3:"Advanced"};
+$("seg").innerHTML=[1,2,3].map(n=>`<button data-l="${n}"><b>Level ${n}</b>${labels[n]}</button>`).join("");
+document.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>load(+b.dataset.l));
+
+async function load(l){
+  cur=l;const my=++token;shown=0;data=null;
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",+b.dataset.l===l));
+  $("pcard").innerHTML='<span class="tag">AI is generating a problem…</span><div class="skel"></div><div class="skel" style="width:70%"></div>';
+  $("chat").innerHTML="";$("prog").style.width="0";$("fb").textContent="";$("inp").value="";
+  $("solCard").classList.add("hidden");$("hintBtn").disabled=true;$("solBtn").disabled=true;$("chk").disabled=true;
+  const d=await askAI(l);if(my!==token)return;data=d;
+  $("pcard").innerHTML=`<span class="tag">Level ${d.level} · ${d.name}</span><p class="problem">${d.problem}</p><div class="eq">${d.eq}</div><div class="badge">🎯 <span>Method: ${d.hint}</span></div>`;
+  $("inp").placeholder=d.answer.label;
+  $("hintBtn").disabled=false;$("solBtn").disabled=false;$("chk").disabled=false;$("hintBtn").textContent="💡 Give me a hint";
+}
+function bubble(title){
+  const m=document.createElement("div");m.className="msg";
+  m.innerHTML='<div class="av">🤖</div><div class="bub"><small></small><span class="t"><span class="dots"><span></span><span></span><span></span></span></span></div>';
+  m.querySelector("small").textContent=title;$("chat").appendChild(m);m.scrollIntoView({behavior:"smooth",block:"nearest"});return m.querySelector(".t");
+}
+function type(el,text,done){let i=0;el.textContent="";const s=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(s);done&&done()}},14)}
+$("hintBtn").onclick=()=>{
+  if(!data||shown>=data.hints.length)return;
+  const my=token,n=shown++,btn=$("hintBtn");btn.disabled=true;
+  const el=bubble(`Hint ${n+1} of ${data.hints.length}`);
+  setTimeout(()=>{if(my!==token)return;type(el,data.hints[n],()=>{
+    $("prog").style.width=(shown/data.hints.length*100)+"%";
+    if(shown<data.hints.length)btn.disabled=false;else btn.textContent="All hints shown";
+  })},700);
+};
+$("solBtn").onclick=()=>{
+  if(!data)return;const c=$("solCard");
+  c.innerHTML=`<span class="tag">Full solution</span><ol>${data.solution.map(s=>`<li>${s}</li>`).join("")}</ol><div class="final">${data.final}</div>`;
+  c.classList.remove("hidden");c.scrollIntoView({behavior:"smooth",block:"start"});
+};
+function num(s){s=s.replace(",",".").trim();if(s.includes("/")){const[a,b]=s.split("/");return parseFloat(a)/parseFloat(b)}return parseFloat(s)}
+$("chk").onclick=()=>{
+  if(!data)return;
+  const v=$("inp").value.split(/[\s;]+|(?<=\d),\s+/).filter(Boolean).map(num).filter(x=>!isNaN(x)).sort((a,b)=>a-b);
+  const r=[...data.answer.roots].sort((a,b)=>a-b),f=$("fb");
+  if(!v.length){f.className="fb bad";f.textContent="Enter your answer in the field above.";return}
+  const ok=v.length===r.length&&v.every((x,i)=>Math.abs(x-r[i])<0.01);
+  f.className="fb "+(ok?"ok":"bad");
+  f.textContent=ok?"✅ Correct! Great job. Try the next level.":"❌ Not quite yet. Take a hint and try again.";
+};
+$("inp").addEventListener("keydown",e=>{if(e.key==="Enter")$("chk").click()});
+load(1);
+</script>
+</body>
+</html>
